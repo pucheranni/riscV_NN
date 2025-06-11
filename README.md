@@ -149,4 +149,365 @@ Important
 - Utilize seções para com # para descrever cada função/etapa do código.
 - utilize \`\`\`s seu código aqui\`\`\` para apresentar a implementação realizada.
 
-Back to top
+
+{
+  "title": "RISC-V Assembly Programmer’s Handbook",
+  "description": "This chapter is a placeholder for an assembly programmer’s manual. It includes assembler mnemonics for integer and floating-point registers, as well as standard RISC-V pseudoinstructions.",
+  "tables": [
+    {
+      "table_number": "20.1",
+      "title": "Assembler mnemonics for RISC-V integer and floating-point registers",
+      "columns": ["Register", "ABI Name", "Description", "Saver"],
+      "rows": [
+        {"Register": "x0", "ABI Name": "zero", "Description": "Hard-wired zero", "Saver": "—"},
+        {"Register": "x1", "ABI Name": "ra", "Description": "Return address", "Saver": "Caller"},
+        {"Register": "x2", "ABI Name": "sp", "Description": "Stack pointer", "Saver": "Callee"},
+        {"Register": "x3", "ABI Name": "gp", "Description": "Global pointer", "Saver": "—"},
+        {"Register": "x4", "ABI Name": "tp", "Description": "Thread pointer", "Saver": "—"},
+        {"Register": "x5", "ABI Name": "t0", "Description": "Temporary/alternate link register", "Saver": "Caller"},
+        {"Register": "x6–7", "ABI Name": "t1–2", "Description": "Temporaries", "Saver": "Caller"},
+        {"Register": "x8", "ABI Name": "s0/fp", "Description": "Saved register/frame pointer", "Saver": "Callee"},
+        {"Register": "x9", "ABI Name": "s1", "Description": "Saved register", "Saver": "Callee"},
+        {"Register": "x10–11", "ABI Name": "a0–1", "Description": "Function arguments/return values", "Saver": "Caller"},
+        {"Register": "x12–17", "ABI Name": "a2–7", "Description": "Function arguments", "Saver": "Caller"},
+        {"Register": "x18–27", "ABI Name": "s2–11", "Description": "Saved registers", "Saver": "Callee"},
+        {"Register": "x28–31", "ABI Name": "t3–6", "Description": "Temporaries", "Saver": "Caller"},
+        {"Register": "f0–7", "ABI Name": "ft0–7", "Description": "FP temporaries", "Saver": "Caller"},
+        {"Register": "f8–9", "ABI Name": "fs0–1", "Description": "FP saved registers", "Saver": "Callee"},
+        {"Register": "f10–11", "ABI Name": "fa0–1", "Description": "FP arguments/return values", "Saver": "Caller"},
+        {"Register": "f12–17", "ABI Name": "fa2–7", "Description": "FP arguments", "Saver": "Caller"},
+        {"Register": "f18–27", "ABI Name": "fs2–11", "Description": "FP saved registers", "Saver": "Callee"},
+        {"Register": "f28–31", "ABI Name": "ft8–11", "Description": "FP temporaries", "Saver": "Caller"}
+      ]
+    },
+    {
+      "table_number": "20.2",
+      "title": "RISC-V pseudoinstructions",
+      "columns": ["Pseudoinstruction", "Base Instruction(s)", "Meaning"],
+      "rows": [
+        {
+          "Pseudoinstruction": "la rd, symbol",
+          "Base Instruction(s)": "auipc rd, symbol[31:12]; addi rd, rd, symbol[11:0]",
+          "Meaning": "Load address"
+        },
+        {
+          "Pseudoinstruction": "l{b|h|w|d} rd, symbol",
+          "Base Instruction(s)": "auipc rd, symbol[31:12]; l{b|h|w|d} rd, symbol[11:0](rd)",
+          "Meaning": "Load global"
+        },
+        {
+          "Pseudoinstruction": "s{b|h|w|d} rd, symbol, rt",
+          "Base Instruction(s)": "auipc rt, symbol[31:12]; s{b|h|w|d} rd, symbol[11:0](rt)",
+          "Meaning": "Store global"
+        },
+        {
+          "Pseudoinstruction": "fl{w|d} rd, symbol, rt",
+          "Base Instruction(s)": "auipc rt, symbol[31:12]; fl{w|d} rd, symbol[11:0](rt)",
+          "Meaning": "Floating-point load global"
+        },
+        {
+          "Pseudoinstruction": "fs{w|d} rd, symbol, rt",
+          "Base Instruction(s)": "auipc rt, symbol[31:12]; fs{w|d} rd, symbol[11:0](rt)",
+          "Meaning": "Floating-point store global"
+        },
+        {
+          "Pseudoinstruction": "nop",
+          "Base Instruction(s)": "addi x0, x0, 0",
+          "Meaning": "No operation"
+        },
+        {
+          "Pseudoinstruction": "li rd, immediate",
+          "Base Instruction(s)": "Myriad sequences",
+          "Meaning": "Load immediate"
+        },
+        {
+          "Pseudoinstruction": "mv rd, rs",
+          "Base Instruction(s)": "addi rd, rs, 0",
+          "Meaning": "Copy register"
+        },
+        {
+          "Pseudoinstruction": "not rd, rs",
+          "Base Instruction(s)": "xori rd, rs, -1",
+          "Meaning": "One’s complement"
+        },
+        {
+          "Pseudoinstruction": "neg rd, rs",
+          "Base Instruction(s)": "sub rd, x0, rs",
+          "Meaning": "Two’s complement"
+        },
+        {
+          "Pseudoinstruction": "negw rd, rs",
+          "Base Instruction(s)": "subw rd, x0, rs",
+          "Meaning": "Two’s complement word"
+        },
+        {
+          "Pseudoinstruction": "sext.w rd, rs",
+          "Base Instruction(s)": "addiw rd, rs, 0",
+          "Meaning": "Sign extend word"
+        },
+        {
+          "Pseudoinstruction": "seqz rd, rs",
+          "Base Instruction(s)": "sltiu rd, rs, 1",
+          "Meaning": "Set if = zero"
+        },
+        {
+          "Pseudoinstruction": "snez rd, rs",
+          "Base Instruction(s)": "sltu rd, x0, rs",
+          "Meaning": "Set if ≠ zero"
+        },
+        {
+          "Pseudoinstruction": "sltz rd, rs",
+          "Base Instruction(s)": "slt rd, rs, x0",
+          "Meaning": "Set if < zero"
+        },
+        {
+          "Pseudoinstruction": "sgtz rd, rs",
+          "Base Instruction(s)": "slt rd, x0, rs",
+          "Meaning": "Set if > zero"
+        },
+        {
+          "Pseudoinstruction": "fmv.s rd, rs",
+          "Base Instruction(s)": "fsgnj.s rd, rs, rs",
+          "Meaning": "Copy single-precision register"
+        },
+        {
+          "Pseudoinstruction": "fabs.s rd, rs",
+          "Base Instruction(s)": "fsgnjx.s rd, rs, rs",
+          "Meaning": "Single-precision absolute value"
+        },
+        {
+          "Pseudoinstruction": "fneg.s rd, rs",
+          "Base Instruction(s)": "fsgnjn.s rd, rs, rs",
+          "Meaning": "Single-precision negate"
+        },
+        {
+          "Pseudoinstruction": "fmv.d rd, rs",
+          "Base Instruction(s)": "fsgnj.d rd, rs, rs",
+          "Meaning": "Copy double-precision register"
+        },
+        {
+          "Pseudoinstruction": "fabs.d rd, rs",
+          "Base Instruction(s)": "fsgnjx.d rd, rs, rs",
+          "Meaning": "Double-precision absolute value"
+        },
+        {
+          "Pseudoinstruction": "fneg.d rd, rs",
+          "Base Instruction(s)": "fsgnjn.d rd, rs, rs",
+          "Meaning": "Double-precision negate"
+        },
+        {
+          "Pseudoinstruction": "beqz rs, offset",
+          "Base Instruction(s)": "beq rs, x0, offset",
+          "Meaning": "Branch if = zero"
+        },
+        {
+          "Pseudoinstruction": "bnez rs, offset",
+          "Base Instruction(s)": "bne rs, x0, offset",
+          "Meaning": "Branch if ≠ zero"
+        },
+        {
+          "Pseudoinstruction": "blez rs, offset",
+          "Base Instruction(s)": "bge x0, rs, offset",
+          "Meaning": "Branch if ≤ zero"
+        },
+        {
+          "Pseudoinstruction": "bgez rs, offset",
+          "Base Instruction(s)": "bge rs, x0, offset",
+          "Meaning": "Branch if ≥ zero"
+        },
+        {
+          "Pseudoinstruction": "bltz rs, offset",
+          "Base Instruction(s)": "blt rs, x0, offset",
+          "Meaning": "Branch if < zero"
+        },
+        {
+          "Pseudoinstruction": "bgtz rs, offset",
+          "Base Instruction(s)": "blt x0, rs, offset",
+          "Meaning": "Branch if > zero"
+        },
+        {
+          "Pseudoinstruction": "bgt rs, rt, offset",
+          "Base Instruction(s)": "blt rt, rs, offset",
+          "Meaning": "Branch if >"
+        },
+        {
+          "Pseudoinstruction": "ble rs, rt, offset",
+          "Base Instruction(s)": "bge rt, rs, offset",
+          "Meaning": "Branch if ≤"
+        },
+        {
+          "Pseudoinstruction": "bgtu rs, rt, offset",
+          "Base Instruction(s)": "bltu rt, rs, offset",
+          "Meaning": "Branch if >, unsigned"
+        },
+        {
+          "Pseudoinstruction": "bleu rs, rt, offset",
+          "Base Instruction(s)": "bgeu rt, rs, offset",
+          "Meaning": "Branch if ≤, unsigned"
+        },
+        {
+          "Pseudoinstruction": "j offset",
+          "Base Instruction(s)": "jal x0, offset",
+          "Meaning": "Jump"
+        },
+        {
+          "Pseudoinstruction": "jal offset",
+          "Base Instruction(s)": "jal x1, offset",
+          "Meaning": "Jump and link"
+        },
+        {
+          "Pseudoinstruction": "jr rs",
+          "Base Instruction(s)": "jalr x0, rs, 0",
+          "Meaning": "Jump register"
+        },
+        {
+          "Pseudoinstruction": "jalr rs",
+          "Base Instruction(s)": "jalr x1, rs, 0",
+          "Meaning": "Jump and link register"
+        },
+        {
+          "Pseudoinstruction": "ret",
+          "Base Instruction(s)": "jalr x0, x1, 0",
+          "Meaning": "Return from subroutine"
+        },
+        {
+          "Pseudoinstruction": "call offset",
+          "Base Instruction(s)": "auipc x6, offset[31:12]; jalr x1, x6, offset[11:0]",
+          "Meaning": "Call far-away subroutine"
+        },
+        {
+          "Pseudoinstruction": "tail offset",
+          "Base Instruction(s)": "auipc x6, offset[31:12]; jalr x0, x6, offset[11:0]",
+          "Meaning": "Tail call far-away subroutine"
+        },
+        {
+          "Pseudoinstruction": "fence",
+          "Base Instruction(s)": "fence iorw, iorw",
+          "Meaning": "Fence on all memory and I/O"
+        }
+      ]
+    },
+    {
+      "table_number": "20.3",
+      "title": "Pseudoinstructions for accessing control and status registers",
+      "columns": ["Pseudoinstruction", "Base Instruction", "Meaning"],
+      "rows": [
+        {
+          "Pseudoinstruction": "rdinstret[h] rd",
+          "Base Instruction": "csrrs rd, instret[h], x0",
+          "Meaning": "Read instructions-retired counter"
+        },
+        {
+          "Pseudoinstruction": "rdcycle[h] rd",
+          "Base Instruction": "csrrs rd, cycle[h], x0",
+          "Meaning": "Read cycle counter"
+        },
+        {
+          "Pseudoinstruction": "rdtime[h] rd",
+          "Base Instruction": "csrrs rd, time[h], x0",
+          "Meaning": "Read real-time clock"
+        },
+        {
+          "Pseudoinstruction": "csrr rd, csr",
+          "Base Instruction": "csrrs rd, csr, x0",
+          "Meaning": "Read CSR"
+        },
+        {
+          "Pseudoinstruction": "csrw csr, rs",
+          "Base Instruction": "csrrw x0, csr, rs",
+          "Meaning": "Write CSR"
+        },
+        {
+          "Pseudoinstruction": "csrs csr, rs",
+          "Base Instruction": "csrrs x0, csr, rs",
+          "Meaning": "Set bits in CSR"
+        },
+        {
+          "Pseudoinstruction": "csrc csr, rs",
+          "Base Instruction": "csrrc x0, csr, rs",
+          "Meaning": "Clear bits in CSR"
+        },
+        {
+          "Pseudoinstruction": "csrwi csr, imm",
+          "Base Instruction": "csrrwi x0, csr, imm",
+          "Meaning": "Write CSR, immediate"
+        },
+        {
+          "Pseudoinstruction": "csrsi csr, imm",
+          "Base Instruction": "csrrsi x0, csr, imm",
+          "Meaning": "Set bits in CSR, immediate"
+        },
+        {
+          "Pseudoinstruction": "csrci csr, imm",
+          "Base Instruction": "csrrci x0, csr, imm",
+          "Meaning": "Clear bits in CSR, immediate"
+        },
+        {
+          "Pseudoinstruction": "frcsr rd",
+          "Base Instruction": "csrrs rd, fcsr, x0",
+          "Meaning": "Read FP control/status register"
+        },
+        {
+          "Pseudoinstruction": "fscsr rd, rs",
+          "Base Instruction": "csrrw rd, fcsr, rs",
+          "Meaning": "Swap FP control/status register"
+        },
+        {
+          "Pseudoinstruction": "fscsr rs",
+          "Base Instruction": "csrrw x0, fcsr, rs",
+          "Meaning": "Write FP control/status register"
+        },
+        {
+          "Pseudoinstruction": "frrm rd",
+          "Base Instruction": "csrrs rd, frm, x0",
+          "Meaning": "Read FP rounding mode"
+        },
+        {
+          "Pseudoinstruction": "fsrm rd, rs",
+          "Base Instruction": "csrrw rd, frm, rs",
+          "Meaning": "Swap FP rounding mode"
+        },
+        {
+          "Pseudoinstruction": "fsrm rs",
+          "Base Instruction": "csrrw x0, frm, rs",
+          "Meaning": "Write FP rounding mode"
+        },
+        {
+          "Pseudoinstruction": "fsrmi rd, imm",
+          "Base Instruction": "csrrwi rd, frm, imm",
+          "Meaning": "Swap FP rounding mode, immediate"
+        },
+        {
+          "Pseudoinstruction": "fsrmi imm",
+          "Base Instruction": "csrrwi x0, frm, imm",
+          "Meaning": "Write FP rounding mode, immediate"
+        },
+        {
+          "Pseudoinstruction": "frflags rd",
+          "Base Instruction": "csrrs rd, fflags, x0",
+          "Meaning": "Read FP exception flags"
+        },
+        {
+          "Pseudoinstruction": "fsflags rd, rs",
+          "Base Instruction": "csrrw rd, fflags, rs",
+          "Meaning": "Swap FP exception flags"
+        },
+        {
+          "Pseudoinstruction": "fsflags rs",
+          "Base Instruction": "csrrw x0, fflags, rs",
+          "Meaning": "Write FP exception flags"
+        },
+        {
+          "Pseudoinstruction": "fsflagsi rd, imm",
+          "Base Instruction": "csrrwi rd, fflags, imm",
+          "Meaning": "Swap FP exception flags, immediate"
+        },
+        {
+          "Pseudoinstruction": "fsflagsi imm",
+          "Base Instruction": "csrrwi x0, fflags, imm",
+          "Meaning": "Write FP exception flags, immediate"
+        }
+      ]
+    }
+  ]
+}
