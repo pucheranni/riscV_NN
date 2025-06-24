@@ -533,6 +533,12 @@ matrix_vector_mult:
             j inner_loop
 
         inner_done:
+            # Explicitly treat the lower 8 bits of the sum as a signed 8-bit number
+            # then sign-extend to 32 bits before clamping.
+            andi t2, t2, 0xFF   # Mask to keep only lower 8 bits
+            slli t2, t2, 24     # Shift to MSB
+            srai t2, t2, 24     # Shift back with sign extension
+
             # Clamp the sum t2 to 8-bit signed range [-128, 127]
             # This is Z[c][j] before ReLU (or for final output).
             li t3, 127
@@ -568,12 +574,12 @@ relu:
         beq t0, a1, relu_done # if i == size, exit
 
         add t1, a0, t0 # t1 = &vector[i]
-        lb t2, 0(t1)   # t2 = vector[i] (8-bit signed value)
+        lb t2, 0(t1)   # t2 = vector[i] (8-bit signed value, lb sign-extends)
 
-        # Correctly sign-extend the 8-bit value to 32 bits for comparison
-        # `lb` already sign-extends, but for clarity or if it was from an unsigned load,
-        # this sequence is slli t2, t2, 24; srai t2, t2, 24.
-        # Since lb does sign-extend, t2 is already a 32-bit sign-extended value.
+        # Explicitly apply the 8-bit signed interpretation before comparison
+        andi t2, t2, 0xFF
+        slli t2, t2, 24
+        srai t2, t2, 24
 
         # if (vector[i] < 0) vector[i] = 0
         bgez t2, not_negative_relu # If vector[i] >= 0, skip zeroing
@@ -601,6 +607,10 @@ argmax:
 
     # Initialize max_val with the first element
     lb t1, 0(a0)     # t1 = max_val = vector[0] (8-bit, sign-extended by lb)
+    # Explicitly apply 8-bit signed interpretation
+    andi t1, t1, 0xFF
+    slli t1, t1, 24
+    srai t1, t1, 24
     li t2, 0         # t2 = max_idx = 0
 
     li t0, 1 # t0 = i = 1 (start comparison from the second element)
@@ -609,8 +619,10 @@ argmax:
 
         add t3, a0, t0   # t3 = &vector[i]
         lb t4, 0(t3)     # t4 = current_val = vector[i] (8-bit, sign-extended by lb)
-
-        # No need for explicit slli/srai as lb sign-extends.
+        # Explicitly apply 8-bit signed interpretation
+        andi t4, t4, 0xFF
+        slli t4, t4, 24
+        srai t4, t4, 24
 
         ble t4, t1, not_new_max_argmax # if current_val <= max_val, continue
 
